@@ -1,4 +1,8 @@
-import { createClient, type Session } from "@supabase/supabase-js";
+import {
+  createClient,
+  type Session,
+  type User as SupUser,
+} from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -6,6 +10,16 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
+
+type UserMetadata = {
+  first_name: string;
+  last_name: string;
+  email_verified: boolean;
+};
+
+type User = SupUser & {
+  user_metadata: UserMetadata;
+};
 
 export function useRedirectIfSession(url: string, has: boolean = true) {
   const navigate = useNavigate();
@@ -34,6 +48,18 @@ export function useSession() {
   }, []);
 
   return session;
+}
+
+export function useCurrentUser() {
+  const [user, setUser] = useState<User>();
+
+  useEffect(() => {
+    supabase.auth.getSession().then((session) => {
+      setUser(session.data.session?.user as User);
+    });
+  }, []);
+
+  return user;
 }
 
 export function useLogin() {
