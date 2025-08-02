@@ -6,6 +6,7 @@ import { LastPayments } from "@/components/dashboard/last_payments"
 import { PlansGraph } from "@/components/dashboard/plans_graph"
 import { NewClientModal } from "@/components/dashboard/user_modal"
 import { Button } from "@/components/ui/button"
+import { useRedirectIfSession } from "@/lib/supabase"
 import { formatCurrency } from "@/lib/utils"
 import { Plus, UserPlus } from "lucide-react"
 
@@ -18,6 +19,9 @@ const statsData = {
 }
 
 export function Dashboard() {
+
+  useRedirectIfSession("/login", false);
+
   return (
     <div className='min-h-screen bg-gray-50 space-y-6 p-4 md:p-6 lg:p-8'>
       <div className="mx-auto max-w-7xl space-y-6">

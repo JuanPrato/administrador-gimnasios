@@ -11,7 +11,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { ROUTES } from "@/lib/const"
+import { useLogout } from "@/lib/supabase"
 import { User, Settings, LogOut, Shield } from "lucide-react"
+import { useNavigate } from "react-router"
 
 // Datos de ejemplo del usuario logueado
 const currentUser = {
@@ -23,11 +26,13 @@ const currentUser = {
 }
 
 export function UserNav() {
+
+  const signOut = useLogout();
+  const navigate = useNavigate();
+
   const handleLogout = () => {
-    // Aquí iría la lógica de logout
-    console.log("Cerrando sesión...")
-    // Por ejemplo: signOut() si usas NextAuth
-    // O redirect a página de login
+    signOut();
+    navigate(ROUTES.LOGIN);
   }
 
   const handleProfile = () => {
