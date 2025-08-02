@@ -1,5 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
-import { useEffect } from "react";
+import { createClient, type Session } from "@supabase/supabase-js";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -18,6 +18,22 @@ export function useRedirectIfSession(url: string, has: boolean = true) {
       }
     });
   }, []);
+}
+
+export function useSession() {
+  const [session, setSession] = useState<Session | null>(null);
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  return session;
 }
 
 export function useLogin() {
