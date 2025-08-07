@@ -5,11 +5,13 @@ dotenv.config();
 
 const configSchema = z.object({
   PORT: z.number().readonly(),
+  DATABASE_URL: z.string().readonly(),
 });
 
 type Config = z.infer<typeof configSchema>;
 
 const config: Config = configSchema.parse({
+  ...process.env,
   PORT: Number(process.env.PORT),
 });
 
