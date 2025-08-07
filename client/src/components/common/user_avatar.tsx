@@ -31,7 +31,7 @@ export function UserNav() {
   }
 
   function getInitials() {
-    return (user?.user_metadata.first_name[0] || "") + (user?.user_metadata.last_name[0] || "");
+    return `${(user?.user_metadata.first_name || " ")[0]} ${(user?.user_metadata.last_name || " ")[0]}`;
   }
 
   return (
