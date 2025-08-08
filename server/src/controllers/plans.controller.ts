@@ -1,11 +1,17 @@
 import { Handler } from "express";
-import { plans as plansTable } from "../db/schema";
-import { db } from "../db/db";
+import {
+  getAllPlans,
+  getClientsPerPlan as getClientsPerPlanFromService,
+} from "../service/plan.service";
 
 export const getPlans: Handler = async (req, res, next) => {
-  const plans = await db.select().from(plansTable);
-
-  console.log(plans);
+  const plans = await getAllPlans();
 
   res.json(plans);
+};
+
+export const getClientsPerPlan: Handler = async (req, res) => {
+  const count = await getClientsPerPlanFromService();
+
+  res.json(count);
 };
