@@ -3,7 +3,16 @@ import { db } from "../db/db";
 import { count, eq } from "drizzle-orm";
 
 export const getAllPlans = async () => {
-  await db.select().from(plansTable);
+  const res = await db
+    .select({
+      id: plansTable.id,
+      name: plansTable.name,
+      price: plansTable.price,
+      color: plansTable.color,
+    })
+    .from(plansTable);
+
+  return res.map((r) => ({ ...r, id: Number(r.id) }));
 };
 
 export const getClientsPerPlan = async () => {

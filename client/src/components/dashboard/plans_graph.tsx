@@ -2,12 +2,17 @@ import { Users } from "lucide-react"
 import { ResponsiveContainer, Pie, Cell, Tooltip, PieChart } from "recharts"
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card"
 import { usePlans } from "@/lib/plans";
+import { useEffect } from "react";
 
 const COLORS = ["#8884d8", "#82ca9d", "#ffc658"];
 
 export function PlansGraph() {
 
-  const { plans } = usePlans();
+  const { plans, stats, getClientsPerPlan } = usePlans();
+
+  useEffect(() => {
+    getClientsPerPlan();
+  }, [getClientsPerPlan]);
 
   return (
     <Card>
@@ -22,7 +27,7 @@ export function PlansGraph() {
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={plans}
+                data={plans?.map(p => ({ ...p, value: (stats?.find(s => s.plan === p.id)?.count || 0) }))}
                 cx="50%"
                 cy="50%"
                 labelLine={false}
@@ -31,7 +36,7 @@ export function PlansGraph() {
                 fill="#8884d8"
                 dataKey="value"
               >
-                {plans.map((plan, index) => (
+                {plans?.map((plan, index) => (
                   <Cell key={`cell-${index}`} fill={plan.color} />
                 ))}
               </Pie>
@@ -40,11 +45,11 @@ export function PlansGraph() {
           </ResponsiveContainer>
         </div>
         <div className="mt-4 flex flex-wrap justify-center gap-4">
-          {plans.map((entry, index) => (
+          {plans?.map((entry, index) => (
             <div key={entry.name} className="flex items-center gap-2">
               <div className="h-3 w-3 rounded-full" style={{ backgroundColor: COLORS[index] }} />
               <span className="text-sm text-gray-600">
-                {entry.name}: {100} clientes
+                {entry.name}: {(stats?.find(s => s.plan === entry.id)?.count || 0)} clientes
               </span>
             </div>
           ))}

@@ -1,24 +1,35 @@
-import { create } from "zustand";
+import { useQuery } from "@tanstack/react-query";
+import { getPlans, getPlansStats } from "./api";
 
-interface Plan {
+export interface Plan {
   id: number;
   name: string;
   price: number;
   color: string;
 }
 
-interface PlanStore {
-  plans: Plan[];
+export interface PlanStat {
+  plan: number;
+  count: number;
 }
 
-const usePlansStore = create<PlanStore>()(() => ({
-  plans: [],
-}));
-
 export function usePlans() {
-  const { plans } = usePlansStore();
+  const { data: plans, error } = useQuery({
+    queryKey: ["plans"],
+    queryFn: getPlans,
+  });
 
-  function getClientsPerPlan() {}
+  const { data: stats, refetch: getStats } = useQuery({
+    queryKey: ["planStat"],
+    queryFn: getPlansStats,
+    enabled: false,
+  });
 
-  return { plans, getClientsPerPlan };
+  if (error) console.error(error);
+
+  async function getClientsPerPlan() {
+    getStats();
+  }
+
+  return { plans, stats, getClientsPerPlan };
 }

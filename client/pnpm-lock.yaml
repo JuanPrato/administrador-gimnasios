@@ -32,6 +32,9 @@ dependencies:
   '@tailwindcss/vite':
     specifier: ^4.1.11
     version: 4.1.11(vite@7.0.5)
+  '@tanstack/react-query':
+    specifier: ^5.84.1
+    version: 5.84.1(react@19.1.0)
   class-variance-authority:
     specifier: ^0.7.1
     version: 0.7.1
@@ -68,9 +71,6 @@ dependencies:
   tailwindcss:
     specifier: ^4.1.11
     version: 4.1.11
-  zustand:
-    specifier: ^5.0.7
-    version: 5.0.7(@types/react@19.1.8)(react@19.1.0)
 
 devDependencies:
   '@eslint/js':
@@ -1675,6 +1675,19 @@ packages:
       '@tailwindcss/oxide': 4.1.11
       tailwindcss: 4.1.11
       vite: 7.0.5(@types/node@24.0.14)
+    dev: false
+
+  /@tanstack/query-core@5.83.1:
+    resolution: {integrity: sha512-OG69LQgT7jSp+5pPuCfzltq/+7l2xoweggjme9vlbCPa/d7D7zaqv5vN/S82SzSYZ4EDLTxNO1PWrv49RAS64Q==}
+    dev: false
+
+  /@tanstack/react-query@5.84.1(react@19.1.0):
+    resolution: {integrity: sha512-zo7EUygcWJMQfFNWDSG7CBhy8irje/XY0RDVKKV4IQJAysb+ZJkkJPcnQi+KboyGUgT+SQebRFoTqLuTtfoDLw==}
+    peerDependencies:
+      react: ^18 || ^19
+    dependencies:
+      '@tanstack/query-core': 5.83.1
+      react: 19.1.0
     dev: false
 
   /@types/d3-array@3.2.1:
@@ -3307,25 +3320,3 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
-
-  /zustand@5.0.7(@types/react@19.1.8)(react@19.1.0):
-    resolution: {integrity: sha512-Ot6uqHDW/O2VdYsKLLU8GQu8sCOM1LcoE8RwvLv9uuRT9s6SOHCKs0ZEOhxg+I1Ld+A1Q5lwx+UlKXXUoCZITg==}
-    engines: {node: '>=12.20.0'}
-    peerDependencies:
-      '@types/react': '>=18.0.0'
-      immer: '>=9.0.6'
-      react: '>=18.0.0'
-      use-sync-external-store: '>=1.2.0'
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-      immer:
-        optional: true
-      react:
-        optional: true
-      use-sync-external-store:
-        optional: true
-    dependencies:
-      '@types/react': 19.1.8
-      react: 19.1.0
-    dev: false

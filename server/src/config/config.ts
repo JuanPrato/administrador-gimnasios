@@ -6,6 +6,8 @@ dotenv.config();
 const configSchema = z.object({
   PORT: z.number().readonly(),
   DATABASE_URL: z.string().readonly(),
+  SUPABASE_URL: z.string().readonly(),
+  SUPABASE_ANON_KEY: z.string().readonly(),
 });
 
 type Config = z.infer<typeof configSchema>;
