@@ -4,6 +4,8 @@ import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Textarea } from "../ui/textarea";
 
 interface BasicProps<T, V = string> {
   label: string;
@@ -12,6 +14,25 @@ interface BasicProps<T, V = string> {
   formData: T;
   handleChange: (name: string, value: V) => void;
   loading: boolean;
+}
+
+export function TextInput<T>(props: BasicProps<T>) {
+  const id = useId();
+
+  return (
+    <>
+      <Label htmlFor={id}>{props.label}</Label>
+      <Input
+        id={id}
+        type="text"
+        placeholder={props.placeholder}
+        value={props.formData[props.name as keyof T] as string}
+        onChange={(e) => props.handleChange(props.name, e.target.value)}
+        required
+        disabled={props.loading}
+      />
+    </>
+  );
 }
 
 export function EmailInput<T>({ label, placeholder, name, formData, handleChange, loading }: BasicProps<T>) {
@@ -34,7 +55,6 @@ export function EmailInput<T>({ label, placeholder, name, formData, handleChange
 }
 
 export function PasswordInput<T>(props: BasicProps<T>) {
-
   const id = useId();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -68,7 +88,6 @@ export function PasswordInput<T>(props: BasicProps<T>) {
 }
 
 export function CheckboxInput<T>(props: BasicProps<T, boolean>) {
-
   const id = useId();
 
   return (
@@ -85,4 +104,50 @@ export function CheckboxInput<T>(props: BasicProps<T, boolean>) {
     </>
   );
 
+}
+
+export function TextareaInput<T>(props: BasicProps<T>) {
+  const id = useId();
+
+  return (
+    <>
+      <Label htmlFor={id}>{props.label}</Label>
+      <Textarea
+        id={id}
+        value={props.formData[props.name as keyof T] as string}
+        onChange={(e) => props.handleChange(props.name, e.target.value)}
+        placeholder={props.placeholder}
+        rows={3}
+      />
+    </>
+  );
+}
+
+type SelectProps<T, V = string> = BasicProps<T, V> & {
+  values: { value: string, text: string }[]
+}
+
+export function SelectInput<T>(props: SelectProps<T>) {
+  const id = useId();
+
+  return (
+    <>
+      <Label htmlFor={id}>{props.label}</Label>
+      <Select
+        value={props.formData[props.name as keyof T] as string}
+        onValueChange={(e) => props.handleChange(props.name, e)}
+      >
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Selecciona un plan" />
+        </SelectTrigger>
+        <SelectContent>
+          {
+            props.values.map(({ value, text }) => (
+              <SelectItem value={value} key={value}>{text}</SelectItem>
+            ))
+          }
+        </SelectContent>
+      </Select>
+    </>
+  );
 }

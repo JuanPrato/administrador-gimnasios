@@ -30,7 +30,7 @@ export default async function Dashboard() {
           {/* Header */}
           <DashboardHeader />
           {/* Tarjetas de estadísticas */}
-          <Stats profile={profile} />
+          <Stats />
         </div>
         <div className="grid gap-6 lg:grid-cols-2">
           <AccessGraph />

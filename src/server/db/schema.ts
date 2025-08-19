@@ -58,6 +58,7 @@ export const profiles = pgTable("profiles", {
     .references(() => gyms.id)
     .notNull(),
   active: boolean("active").notNull(),
+  dni: varchar("dni").notNull(),
 });
 
 export const payments = pgTable("payments", {

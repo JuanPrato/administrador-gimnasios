@@ -3,6 +3,7 @@ import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { entries, payments, plans, profiles } from "~/server/db/schema";
 import { and, count, eq, gte, sql, sum, desc } from "drizzle-orm";
 import dayjs from "dayjs";
+import { getCurrentProfile } from "~/server/auth/server";
 
 export const gymRouter = createTRPCRouter({
   getLastMonthAccess: protectedProcedure.query(async ({ ctx }) => {
@@ -30,9 +31,23 @@ export const gymRouter = createTRPCRouter({
 
     return stats;
   }),
+  getGeneralGymStats: protectedProcedure.query(async ({ ctx }) => {
+    const profile = await getCurrentProfile(ctx.session.data.session!);
+
+    if (!profile) return;
+
+    return getGeneralGymStats(profile?.gym);
+  }),
+  getLastPayments: protectedProcedure.query(async ({ ctx }) => {
+    const profile = await getCurrentProfile(ctx.session.data.session!);
+
+    if (!profile) return;
+
+    return getLastPayments(profile.gym);
+  }),
 });
 
-export async function getGeneralGymStats(gymId: number) {
+async function getGeneralGymStats(gymId: number) {
   const [actives] = await db
     .select({ count: count() })
     .from(profiles)
@@ -71,7 +86,7 @@ export async function getGeneralGymStats(gymId: number) {
   };
 }
 
-export async function getLastPayments(gymId: number, q?: number) {
+async function getLastPayments(gymId: number, q?: number) {
   const result = await db
     .select()
     .from(payments)

@@ -1,11 +1,12 @@
-import { getGeneralGymStats } from "~/server/api/routers/gym";
 import { ValueCard } from "../common/value_card";
-import type { Profile } from "~/server/auth/server";
 import { formatCurrency } from "~/lib/utils";
+import { api } from "~/trpc/server";
 
-export async function Stats({ profile }: { profile: Profile }) {
+export async function Stats() {
 
-  const stats = await getGeneralGymStats(profile.gym);
+  const stats = await api.gym.getGeneralGymStats();
+
+  if (!stats) return;
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 "use client"
 
 import type React from "react"
@@ -8,69 +7,69 @@ import { UserPlus, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "../ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog"
-import { Label } from "../ui/label"
-import { Input } from "../ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
-import { Textarea } from "../ui/textarea"
+import { useForm } from "~/lib/form"
+import { EmailInput, SelectInput, TextareaInput, TextInput } from "../common/input"
+import { api } from "~/trpc/react"
+import { capitalize, formatCurrency } from "~/lib/utils"
 
 interface NewClientModalProps {
   trigger?: React.ReactNode
 }
 
+type FormType = {
+  name: string,
+  surname: string,
+  email: string,
+  phone: string,
+  dni: string,
+  plan: string,
+  observations: string,
+};
+
 export function NewClientModal({ trigger }: NewClientModalProps) {
-  const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [open, setOpen] = useState(false);
 
-  const [formData, setFormData] = useState({
-    nombre: "",
-    apellido: "",
-    email: "",
-    telefono: "",
+  const { data: plans } = api.plan.getPlans.useQuery();
+  const { mutate, error } = api.user.createNewUser.useMutation();
+
+  const { loading, getProps, submit } = useForm<FormType>({
+    name: "",
+    surname: "",
     dni: "",
+    email: "",
+    observations: "",
     plan: "",
-    fechaInicio: "",
-    observaciones: "",
-  })
+    phone: ""
+  }, {
+    async onSubmit(values) {
+      try {
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+        mutate({
+          dni: values.dni,
+          email: values.email,
+          name: values.name,
+          surname: values.surname,
+          observations: values.observations,
+          phone: values.phone,
+          plan: Number(values.plan)
+        });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+        toast("Cliente agregado exitosamente", {
+          description: `${values.name} ${values.surname} ha sido registrado.`
+        });
 
-    try {
-      // Simular llamada a API
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+        setOpen(false)
+      } catch (error) {
+        console.error(error);
+        toast("Error", {
+          description: "No se pudo agregar el cliente. Intenta nuevamente.",
+        })
+      }
+    },
+  });
 
-      console.log("Nuevo cliente:", formData)
-
-      toast("Cliente agregado exitosamente", {
-        description: `${formData.nombre} ${formData.apellido} ha sido registrado.`
-      });
-
-      // Resetear formulario
-      setFormData({
-        nombre: "",
-        apellido: "",
-        email: "",
-        telefono: "",
-        dni: "",
-        plan: "",
-        fechaInicio: "",
-        observaciones: "",
-      })
-
-      setOpen(false)
-    } catch (error) {
-      console.error(error);
-      toast("Error", {
-        description: "No se pudo agregar el cliente. Intenta nuevamente.",
-      })
-    } finally {
-      setLoading(false)
-    }
+  function formatPlanValues() {
+    return plans?.map((p) => ({ value: p.id.toString(), text: `${capitalize(p.name)} - ${formatCurrency(p.price)}/mes` })) ?? [];
   }
 
   const defaultTrigger = (
@@ -94,94 +93,34 @@ export function NewClientModal({ trigger }: NewClientModalProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={submit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="nombre">Nombre *</Label>
-              <Input
-                id="nombre"
-                value={formData.nombre}
-                onChange={(e) => handleInputChange("nombre", e.target.value)}
-                placeholder="Ej: Juan"
-                required
-              />
+              <TextInput {...getProps("name")} label="Nombre *" />
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="apellido">Apellido *</Label>
-              <Input
-                id="apellido"
-                value={formData.apellido}
-                onChange={(e) => handleInputChange("apellido", e.target.value)}
-                placeholder="Ej: Pérez"
-                required
-              />
+              <TextInput {...getProps("surname")} label="Apellido *" />
             </div>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleInputChange("email", e.target.value)}
-                placeholder="juan.perez@email.com"
-                required
-              />
+              <EmailInput {...getProps("email")} label="Email *" />
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="telefono">Teléfono</Label>
-              <Input
-                id="telefono"
-                value={formData.telefono}
-                onChange={(e) => handleInputChange("telefono", e.target.value)}
-                placeholder="11-1234-5678"
-                required
-              />
+              <TextInput {...getProps("phone")} label="Teléfono" />
             </div>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="dni">DNI *</Label>
-              <Input
-                id="dni"
-                value={formData.dni}
-                onChange={(e) => handleInputChange("dni", e.target.value)}
-                placeholder="12345678"
-                required
-              />
+              <TextInput {...getProps("dni")} label="DNI *" />
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="plan">Plan *</Label>
-              <Select value={formData.plan} onValueChange={(value) => handleInputChange("plan", value)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecciona un plan" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="basico">Básico - $100/mes</SelectItem>
-                  <SelectItem value="premium">Premium - $150/mes</SelectItem>
-                  <SelectItem value="full">Full Access - $200/mes</SelectItem>
-                </SelectContent>
-              </Select>
+              <SelectInput {...getProps("plan")} label="Plan *" values={formatPlanValues()} />
             </div>
           </div>
-
           <div className="space-y-2">
-            <Label htmlFor="observaciones">Observaciones</Label>
-            <Textarea
-              id="observaciones"
-              value={formData.observaciones}
-              onChange={(e) => handleInputChange("observaciones", e.target.value)}
-              placeholder="Información adicional sobre el cliente..."
-              rows={3}
-            />
+            <TextareaInput {...getProps("observations")} label="Observaciones" />
           </div>
-
           <DialogFooter className="gap-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>
               Cancelar

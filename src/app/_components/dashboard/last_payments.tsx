@@ -3,12 +3,11 @@ import { Calendar } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "../ui/table";
 import { Badge } from "../ui/badge";
-import { getLastPayments } from "~/server/api/routers/gym";
-import type { Profile } from "~/server/auth/server";
+import { api } from "~/trpc/server";
 
-export async function LastPayments({ profile }: { profile: Profile }) {
+export async function LastPayments() {
 
-  const payments = await getLastPayments(profile.gym);
+  const payments = await api.gym.getLastPayments();
 
   return (
     <Card>
@@ -30,7 +29,7 @@ export async function LastPayments({ profile }: { profile: Profile }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {payments.map((payment) => (
+              {(payments ?? []).map((payment) => (
                 <TableRow key={payment.id}>
                   <TableCell className="font-medium">{payment.name}</TableCell>
                   <TableCell>{formatDate(payment.date)}</TableCell>
