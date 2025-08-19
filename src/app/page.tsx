@@ -36,7 +36,7 @@ export default async function Dashboard() {
           <AccessGraph />
           <PlansGraph />
         </div>
-        <LastPayments profile={profile} />
+        <LastPayments />
       </div>
     </HydrateClient>
   );

@@ -26,7 +26,7 @@ export const userRouter = createTRPCRouter({
 
       const userRes = await supabase.auth.signUp({
         email: input.email,
-        password: "Prueba01",
+        password: `${input.dni}`,
         phone: input.phone,
       });
 
