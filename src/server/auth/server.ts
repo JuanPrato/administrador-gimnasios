@@ -9,8 +9,8 @@ import { eq } from "drizzle-orm";
 export async function createServerClient() {
   const cookieStore = await cookies();
   return createSupServerClient(
-    env.SUPABASE_URL as string,
-    env.SUPABASE_SERVICE_ROLE_KEY as string,
+    env.SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY,
     {
       cookies: {
         getAll() {

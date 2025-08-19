@@ -1,8 +1,8 @@
 import { createBrowserClient as createSupBrowserClient } from "@supabase/ssr";
 import { env } from "~/env";
 
-const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL as string;
-const supabaseKey = env.NEXT_PUBLIC_SUPABASE_ANON as string;
+const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = env.NEXT_PUBLIC_SUPABASE_ANON;
 
 export function createBrowserClient() {
   return createSupBrowserClient(supabaseUrl, supabaseKey);
