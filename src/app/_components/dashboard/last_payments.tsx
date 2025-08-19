@@ -32,7 +32,7 @@ export async function LastPayments() {
               {(payments ?? []).map((payment) => (
                 <TableRow key={payment.id}>
                   <TableCell className="font-medium">{payment.name}</TableCell>
-                  <TableCell>{formatDate(payment.date)}</TableCell>
+                  <TableCell>{payment.date}</TableCell>
                   <TableCell>
                     <Badge style={{ backgroundColor: payment.plan.color ?? "" }}>{payment.plan.name}</Badge>
                   </TableCell>

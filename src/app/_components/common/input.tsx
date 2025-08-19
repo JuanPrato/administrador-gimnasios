@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useId, useState, type ChangeEvent } from "react";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
@@ -14,6 +14,19 @@ interface BasicProps<T, V = string> {
   formData: T;
   handleChange: (name: string, value: V) => void;
   loading: boolean;
+  required?: boolean;
+  error?: () => string | undefined;
+}
+
+function returnInputProps<T>(props: BasicProps<T>) {
+  return {
+    placeholder: props.placeholder,
+    value: props.formData[props.name as keyof T] as string,
+    onChange: (e: ChangeEvent<HTMLInputElement>) => props.handleChange(props.name, e.target.value),
+    required: props.required ?? true,
+    disabled: props.loading,
+    className: props.error?.() !== undefined ? "ring ring-red-500" : ""
+  }
 }
 
 export function TextInput<T>(props: BasicProps<T>) {
@@ -25,31 +38,25 @@ export function TextInput<T>(props: BasicProps<T>) {
       <Input
         id={id}
         type="text"
-        placeholder={props.placeholder}
-        value={props.formData[props.name as keyof T] as string}
-        onChange={(e) => props.handleChange(props.name, e.target.value)}
-        required
-        disabled={props.loading}
+        {...returnInputProps(props)}
       />
+      <span className="text-red-400 text-xs">{props.error?.()}</span>
     </>
   );
 }
 
-export function EmailInput<T>({ label, placeholder, name, formData, handleChange, loading }: BasicProps<T>) {
+export function EmailInput<T>(props: BasicProps<T>) {
   const id = useId();
 
   return (
     <>
-      <Label htmlFor={id}>{label}</Label>
+      <Label htmlFor={id}>{props.label}</Label>
       <Input
         id={id}
         type="email"
-        placeholder={placeholder}
-        value={formData[name as keyof T] as string}
-        onChange={(e) => handleChange(name, e.target.value)}
-        required
-        disabled={loading}
+        {...returnInputProps(props)}
       />
+      <span className="text-red-400 text-xs">{props.error?.()}</span>
     </>
   );
 }
@@ -148,6 +155,7 @@ export function SelectInput<T>(props: SelectProps<T>) {
           }
         </SelectContent>
       </Select>
+      <span className="text-red-400 text-xs">{props.error?.()}</span>
     </>
   );
 }

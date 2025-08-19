@@ -18,14 +18,7 @@ export function DashboardHeader() {
         <SubTitle>Resumen del mes actual - {month ?? "0"} {dayjs().year().toString()}</SubTitle>
       </div>
       <div className="flex flex-col gap-2 sm:flex-row">
-        <NewClientModal
-          trigger={
-            <Button className="flex items-center gap-2">
-              <UserPlus className="h-4 w-4" />
-              Agregar nuevo cliente
-            </Button>
-          }
-        />
+        <NewClientModal />
         <Button variant="outline" className="flex items-center gap-2 bg-transparent">
           <Plus className="h-4 w-4" />
           Crear nuevo plan

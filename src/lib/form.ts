@@ -3,6 +3,7 @@ import { useState } from "react";
 interface IOpts<T> {
   onSubmit: ((values: T) => void) | ((values: T) => Promise<void>);
   onSuccess?: () => void;
+  errors?: (name: keyof T) => string | undefined;
 }
 
 export function useForm<T>(initialValue?: T, opts?: IOpts<T>) {
@@ -37,13 +38,15 @@ export function useForm<T>(initialValue?: T, opts?: IOpts<T>) {
       formData,
       handleChange: handleInputChange,
       loading,
+      error: () => opts?.errors?.(name),
     };
   }
 
   return {
     loading,
-    error,
+    error: opts?.errors ?? error,
     submit,
     getProps,
+    formData,
   };
 }

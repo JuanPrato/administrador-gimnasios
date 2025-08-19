@@ -2,12 +2,13 @@ import z from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { createServerClient, getCurrentProfile } from "~/server/auth/server";
 import { profiles } from "~/server/db/schema";
+import { TRPCError } from "@trpc/server";
 
 const createNewUserSchema = z.object({
   name: z.string().nonempty(),
   surname: z.string().nonempty(),
   email: z.string().email(),
-  phone: z.string(),
+  phone: z.string().regex(/^\d+$/, "String must contain only digits."),
   dni: z.string(),
   plan: z.number(),
   observations: z.string().nullable(),
@@ -29,8 +30,12 @@ export const userRouter = createTRPCRouter({
         phone: input.phone,
       });
 
-      console.log(userRes);
-      if (userRes.error || !userRes.data.user) return;
+      if (userRes.error || !userRes.data.user) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: userRes.error?.message,
+        });
+      }
 
       await ctx.db.insert(profiles).values({
         role: 2,
