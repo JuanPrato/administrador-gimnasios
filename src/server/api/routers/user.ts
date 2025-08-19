@@ -8,10 +8,12 @@ const createNewUserSchema = z.object({
   name: z.string().nonempty(),
   surname: z.string().nonempty(),
   email: z.string().email(),
-  phone: z.string().regex(/^\d+$/, "String must contain only digits."),
+  phone: z.optional(
+    z.string().regex(/^\d+$/, "String must contain only digits."),
+  ),
   dni: z.string(),
   plan: z.number(),
-  observations: z.string().nullable(),
+  observations: z.string().optional(),
 });
 
 export const userRouter = createTRPCRouter({
@@ -27,7 +29,7 @@ export const userRouter = createTRPCRouter({
       const userRes = await supabase.auth.signUp({
         email: input.email,
         password: `${input.dni}`,
-        phone: input.phone,
+        phone: input.phone ?? undefined,
       });
 
       if (userRes.error || !userRes.data.user) {

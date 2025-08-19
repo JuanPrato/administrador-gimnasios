@@ -7,6 +7,7 @@ import { DialogFooter } from "../ui/dialog"
 import { Button } from "../ui/button"
 import { Loader2, UserPlus } from "lucide-react"
 import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 type FormType = {
   name: string,
@@ -37,6 +38,8 @@ export function UserForm(props: Props) {
   const { data: plans } = api.plan.getPlans.useQuery();
   const { mutate, status, error } = api.user.createNewUser.useMutation();
 
+  const router = useRouter();
+
   const { loading, getProps, submit, formData } = useForm<FormType>(defValues, {
     async onSubmit(values) {
       mutate({
@@ -45,7 +48,7 @@ export function UserForm(props: Props) {
         name: values.name,
         surname: values.surname,
         observations: values.observations,
-        phone: values.phone,
+        phone: values.phone !== "" ? values.phone : undefined,
         plan: Number(values.plan)
       });
     },
@@ -59,6 +62,8 @@ export function UserForm(props: Props) {
       });
 
       props.onResult(true);
+
+      router.refresh();
     }
     if (status === 'error') {
       console.log(error?.data?.zodError?.fieldErrors)
