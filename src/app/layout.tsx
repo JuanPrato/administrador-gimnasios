@@ -5,6 +5,8 @@ import { Geist } from "next/font/google";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { Toaster } from "./_components/ui/sonner";
+import { HydrateClient } from "~/trpc/server";
+import { Header } from "./_components/common/header";
 
 export const metadata: Metadata = {
   title: "Gym manager",
@@ -23,9 +25,17 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geist.variable}`}>
       <body>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <TRPCReactProvider>
+          <HydrateClient>
+            <div className='min-h-screen bg-gray-50 space-y-6 p-4 md:p-6 lg:p-8'>
+              {/* Header */}
+              <Header />
+              {children}
+            </div>
+          </HydrateClient>
+        </TRPCReactProvider>
         <Toaster />
       </body>
-    </html>
+    </html >
   );
 }

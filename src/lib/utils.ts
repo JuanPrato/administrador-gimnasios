@@ -15,8 +15,13 @@ export const formatCurrency = (amount: number) => {
   }).format(amount);
 };
 
-export const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("es-AR");
+export const formatDate = (date: string | Date) => {
+  switch (typeof date) {
+    case "string":
+      return new Date(date).toLocaleDateString("es-AR");
+    case "object":
+      return dayjs(date).format("DD/MM/YYYY");
+  }
 };
 
 dayjs.extend(localeData);

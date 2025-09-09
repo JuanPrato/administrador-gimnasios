@@ -45,6 +45,13 @@ export const gymRouter = createTRPCRouter({
 
     return getLastPayments(profile.gym);
   }),
+  getClientsStats: protectedProcedure.query(async ({ ctx }) => {
+    const profile = await getCurrentProfile(ctx.session.data.session!);
+
+    if (!profile) return;
+
+    return getClientsStats(profile?.gym);
+  }),
 });
 
 async function getGeneralGymStats(gymId: number) {
@@ -103,4 +110,39 @@ async function getLastPayments(gymId: number, q?: number) {
     plan: r.plans,
     total: r.payments.total,
   }));
+}
+
+async function getClientsStats(gymId: number) {
+  const [total] = await db
+    .select({ count: count() })
+    .from(profiles)
+    .where(and(eq(profiles.gym, gymId), eq(profiles.role, 2)));
+
+  const [active] = await db
+    .select({ count: count() })
+    .from(profiles)
+    .where(
+      and(
+        eq(profiles.gym, gymId),
+        eq(profiles.active, true),
+        eq(profiles.role, 2),
+      ),
+    );
+
+  const [inactive] = await db
+    .select({ count: count() })
+    .from(profiles)
+    .where(
+      and(
+        eq(profiles.gym, gymId),
+        eq(profiles.active, false),
+        eq(profiles.role, 2),
+      ),
+    );
+
+  return {
+    total: total?.count ?? 0,
+    active: active?.count ?? 0,
+    inactive: inactive?.count ?? 0,
+  };
 }
