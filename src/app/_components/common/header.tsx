@@ -16,11 +16,13 @@ export function Header() {
   const path = usePathname();
 
   function getClasses(route: keyof typeof PAGES) {
-    return `px-3 py-2 rounded ${ifCurrentReturn(route, "bg-black/25")}`;
+    const className = `px-3 py-2 ${ifCurrentReturn(route, "text-black font-bold border-b-2 border-black", "text-black/60 hover:text-black")} transition`;
+    return className;
   }
 
-  function ifCurrentReturn(route: keyof typeof PAGES, ret: string) {
+  function ifCurrentReturn(route: keyof typeof PAGES, ret: string, alt?: string) {
     if (path === PAGES[route]) return ret;
+    if (alt) return alt;
   }
 
   return (
@@ -30,7 +32,7 @@ export function Header() {
         <SubTitle>Resumen del mes actual - {month ?? "0"} {dayjs().year().toString()}</SubTitle>
       </div>
       <div className="flex flex-col gap-2 sm:flex-row">
-        <nav className="flex justify-center items-center mr-2 divide-x">
+        <nav className="flex justify-center items-center mr-2">
           <Link href={"/"} className={getClasses("dashboard")}>Inicio</Link>
           <Link href={"/clientes"} className={getClasses("clients")}>Clientes</Link>
           <Link href={"/entradas"} className={getClasses("entries")}>Entradas</Link>
