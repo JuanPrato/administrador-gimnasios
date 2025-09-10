@@ -18,6 +18,7 @@ import {
   integer,
   pgTableCreator,
   boolean,
+  text,
 } from "drizzle-orm/pg-core";
 
 export const roles = pgTable("roles", {
@@ -59,6 +60,7 @@ export const profiles = pgTable("profiles", {
     .notNull(),
   active: boolean("active").notNull(),
   dni: varchar("dni").notNull(),
+  email: text("email").notNull().unique(),
 });
 
 export const payments = pgTable("payments", {

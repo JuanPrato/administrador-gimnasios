@@ -6,7 +6,7 @@ import { Button } from "../ui/button";
 import { api } from "~/trpc/server";
 import type { ClientsFilterType } from "~/app/clientes/page";
 
-export async function Filters({ params }: { params: ClientsFilterType }) {
+export async function Filters({ params, resultsQ }: { params: ClientsFilterType, resultsQ: number }) {
 
   const plans = await api.plan.getPlans();
   console.log(params);
@@ -28,7 +28,7 @@ export async function Filters({ params }: { params: ClientsFilterType }) {
             />
           </div>
 
-          <Select name="status" defaultValue={params.status}>
+          <Select name="status" defaultValue={params.status ?? "todos"}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Estado" />
             </SelectTrigger>
@@ -39,7 +39,7 @@ export async function Filters({ params }: { params: ClientsFilterType }) {
             </SelectContent>
           </Select>
 
-          <Select name="plan" defaultValue={params.plan}>
+          <Select name="plan" defaultValue={params.plan ?? "todos"}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Plan" />
             </SelectTrigger>
@@ -61,7 +61,7 @@ export async function Filters({ params }: { params: ClientsFilterType }) {
         </form>
 
         <div className="mt-4 text-sm text-muted-foreground">
-          Mostrando 18 de 24 clientes
+          Mostrando {resultsQ} resultado{resultsQ !== 1 && "s"}
         </div>
       </CardContent>
     </Card>

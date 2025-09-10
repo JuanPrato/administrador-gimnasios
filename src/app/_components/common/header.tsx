@@ -13,7 +13,9 @@ import { PAGES, PAGES_TITLES } from "~/lib/const";
 export function Header() {
 
   const month = getCurrentMonth();
-  const path = usePathname();
+  const pathName = usePathname();
+
+  const path = ("/" + pathName.split("/")[1]);
 
   function getClasses(route: keyof typeof PAGES) {
     const className = `px-3 py-2 ${ifCurrentReturn(route, "text-black font-bold border-b-2 border-black", "text-black/60 hover:text-black")} transition`;

@@ -56,6 +56,7 @@ export const userRouter = createTRPCRouter({
         surname: input.surname,
         active: true,
         dni: input.dni,
+        email: input.email,
       });
     }),
   getClientUsers: protectedProcedure
@@ -88,7 +89,7 @@ export const userRouter = createTRPCRouter({
       }
 
       const clients = await ctx.db
-        .selectDistinctOn([profiles.id])
+        .selectDistinctOn([profiles.createdAt])
         .from(profiles)
         .innerJoin(plans, eq(plans.id, profiles.plan))
         .leftJoin(payments, eq(payments.profile, profiles.id))
@@ -99,7 +100,7 @@ export const userRouter = createTRPCRouter({
             ...queryConditions,
           ),
         )
-        .orderBy(profiles.id, desc(payments.payAt));
+        .orderBy(desc(profiles.createdAt));
 
       return clients;
     }),

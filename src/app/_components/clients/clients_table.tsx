@@ -1,17 +1,17 @@
-import { api } from "~/trpc/server";
-
 import { Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { formatDate } from "~/lib/utils";
-import type { ClientsFilterType } from "~/app/clientes/page";
+import { formatCurrency, formatDate } from "~/lib/utils";
+import type { AppRouter } from "~/server/api/root";
 
-export async function ClientTable({ params }: { params: ClientsFilterType }) {
+type ClientTableProps = {
+  clients: Awaited<ReturnType<AppRouter["user"]["getClientUsers"]>>;
+};
 
-  const clients = await api.user.getClientUsers({ plan: params.plan, search: params.search, status: params.status });
+export async function ClientTable({ clients }: ClientTableProps) {
 
   return (
     <Card>
@@ -38,15 +38,29 @@ export async function ClientTable({ params }: { params: ClientsFilterType }) {
               {(clients ?? []).map(({ plans: plan, profiles: profile, payments: payment }) => (
                 <TableRow key={profile.id}>
                   <TableCell className="font-medium">{profile.dni}</TableCell>
-                  <TableCell>{`${profile.name} ${profile.surname}`}</TableCell>
+                  <TableCell>
+                    <div>
+                      <p>{`${profile.name} ${profile.surname}`}</p>
+                      <p className="text-black/60">{profile.email}</p>
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <Badge style={{ backgroundColor: plan.color ?? "" }}>{plan.name}</Badge>
                   </TableCell>
-                  <TableCell>{payment ? formatDate(payment.payAt) : "-"}</TableCell>
-                  <TableCell>{profile.active ? "Activo" : "Inactivo"}</TableCell>
+                  <TableCell>
+                    {
+                      payment ? (
+                        <div>
+                          <p className="font-bold">{formatDate(payment.payAt)}</p>
+                          <p>{formatCurrency(payment.total)}</p>
+                        </div>
+                      ) : "-"
+                    }
+                  </TableCell>
+                  <TableCell><Badge variant={profile.active ? "default" : "destructive"}>{profile.active ? "Activo" : "Inactivo"}</Badge></TableCell>
                   <TableCell className="text-right font-medium">
                     <Button variant="secondary" asChild>
-                      <Link href={`/clientes/${profile.userId}`}>Ver más</Link>
+                      <Link href={`/clientes/${profile.dni}`}>Ver más</Link>
                     </Button>
                   </TableCell>
                 </TableRow>
