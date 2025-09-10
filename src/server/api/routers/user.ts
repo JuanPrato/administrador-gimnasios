@@ -1,7 +1,7 @@
 import z from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { createServerClient, getCurrentProfile } from "~/server/auth/server";
-import { payments, plans, profiles } from "~/server/db/schema";
+import { entries, payments, plans, profiles } from "~/server/db/schema";
 import { TRPCError } from "@trpc/server";
 import { eq, and, desc, like, or } from "drizzle-orm";
 
@@ -103,5 +103,55 @@ export const userRouter = createTRPCRouter({
         .orderBy(desc(profiles.createdAt));
 
       return clients;
+    }),
+  getUserByDni: protectedProcedure
+    .input(z.object({ dni: z.string().nonempty() }))
+    .query(async ({ ctx, input }) => {
+      const profile = await getCurrentProfile(ctx.session.data.session!);
+
+      if (!profile) {
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid user" });
+      }
+
+      const [user] = await ctx.db
+        .select()
+        .from(profiles)
+        .innerJoin(plans, eq(plans.id, profiles.plan))
+        .where(
+          and(
+            eq(profiles.gym, profile.gym),
+            eq(profiles.role, 2),
+            eq(profiles.dni, input.dni),
+          ),
+        )
+        .limit(1);
+
+      return user;
+    }),
+  getUserMovements: protectedProcedure
+    .input(z.object({ profileId: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const profile = await getCurrentProfile(ctx.session.data.session!);
+
+      if (!profile) {
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid user" });
+      }
+
+      const paymentsList = await ctx.db
+        .select()
+        .from(payments)
+        .where(and(eq(payments.profile, input.profileId)))
+        .orderBy(desc(payments.payAt));
+
+      const entriesList = await ctx.db
+        .select()
+        .from(entries)
+        .where(and(eq(entries.profile, input.profileId)))
+        .orderBy(desc(entries.createdAt));
+
+      return {
+        payments: paymentsList,
+        entries: entriesList,
+      };
     }),
 });

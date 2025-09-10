@@ -38,3 +38,10 @@ export const getCurrentMonth = () => {
 export const capitalize = (word: string) => {
   return word.substring(0, 1).toUpperCase() + word.substring(1);
 };
+
+export function getInitials(...names: (string | undefined)[]) {
+  const initials = names
+    .map((name) => name?.charAt(0).toUpperCase() ?? "")
+    .join("");
+  return initials;
+}
