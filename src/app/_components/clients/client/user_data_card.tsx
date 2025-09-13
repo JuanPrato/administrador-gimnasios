@@ -26,6 +26,7 @@ export function UserDataCard({ clientData: { profiles: clientData, plans: plan }
         </Avatar>
         <CardTitle className="text-xl">
           {clientData.name} {clientData.surname}
+          <span className="text-lg text-black/60 block">{clientData.dni}</span>
         </CardTitle>
         <div className="flex justify-center gap-2">
           <Badge>{clientData.active ? "Activo" : "Inactivo"}</Badge>
